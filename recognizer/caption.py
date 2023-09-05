@@ -5,15 +5,15 @@ from PIL import Image
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-class Caption:
+class ImageChecker:
 
     def __init__(self):
         model, preprocess = clip.load("ViT-B/32", device=device)
         self.model = model
         self.preprocess = preprocess
 
-    def generate(self, caption_list: List[str]):
-        image = self.preprocess(Image.open('images/sample2.jpg')).unsqueeze(0).to(device)
+    def check(self, file_path: str, caption_list: List[str]) -> (str, float):
+        image = self.preprocess(Image.open(file_path)).unsqueeze(0).to(device)
         text = clip.tokenize(caption_list).to(device)
 
         with torch.no_grad():
@@ -23,4 +23,11 @@ class Caption:
             logits_per_image, logits_per_text = self.model(image, text)
             probs = logits_per_image.softmax(dim=-1).cpu().numpy()
 
-        # print(f'Label probs: {probs}')
+            max_score = probs[0][0]
+            selected_caption = caption_list[0]
+            for caption, score in zip(caption_list, probs[0]):
+                if max_score < score:
+                    max_score = score
+                    selected_caption = caption
+
+            return selected_caption, max_score

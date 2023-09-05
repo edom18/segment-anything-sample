@@ -5,6 +5,7 @@ import cv2
 import datetime
 
 from recognizer.segument import SAM
+from recognizer.caption import ImageChecker
 
 def generate_date_filename():
     # 現在の日時を取得
@@ -12,10 +13,10 @@ def generate_date_filename():
     # YYYYMMDD_HHMMSS 形式の文字列を生成
     return now.strftime('%Y%m%d_%H%M%S')
 
-
 app = Flask(__name__)
 
 sam = SAM()
+checker = ImageChecker()
 
 UPLOAD_FOLDER = 'uploads'
 if not os.path.exists(UPLOAD_FOLDER):
@@ -42,10 +43,12 @@ def upload_file():
     if not is_success:
         return "Failed to encode image"
 
+    output_path = f'outputs/result_{generate_date_filename()}.jpg'
+    cv2.imwrite(output_path, result)
 
-    cv2.imwrite(f'outputs/result_{generate_date_filename()}.jpg', result)
+    text, score = checker.check(output_path, ['a photo of a dog', 'a photo of a cat'])
 
-    return "Success"
+    return f'{text} - {score}'
     # io_buf = io.BytesIO(buffer)
 
     # return io_buf.getvalue()
