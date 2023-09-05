@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import cv2
 import torch
 import numpy as np
-import io
 from typing import List
 from segment_anything import SamPredictor, sam_model_registry
 
@@ -14,7 +13,7 @@ class SAM:
         self.model = sam_model_registry['default'](checkpoint='models/sam_vit_h_4b8939.pth')
         self.model.to(device=device)
 
-    def crop(self, file_path: str) -> bytes:
+    def crop(self, file_path: str) -> np.array:
 
         if not file_path:
             return None
@@ -63,10 +62,4 @@ class SAM:
 
         result = image[y:y+h, x:x+w]
 
-        is_success, buffer = cv2.imencode('.jpg', result)
-        if not is_success:
-            return None
-
-        io_buf = io.BytesIO(buffer)
-
-        return io_buf.getvalue()
+        return result
