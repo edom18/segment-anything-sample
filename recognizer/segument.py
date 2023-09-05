@@ -21,7 +21,8 @@ class SAM:
         image = cv2.imread(file_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-        ih, iw = image.shape[-2:]
+        # ih, iw = image.shape[-2:]
+        ih, iw = image.shape[0:2]
 
         input_point = np.array([[ih / 2, iw / 2]])
         input_label = np.array([1])

@@ -24,6 +24,9 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
+
+    print('received request')
+
     if 'file' not in request.files:
         return "No file part"
     
@@ -46,12 +49,15 @@ def upload_file():
     output_path = f'outputs/result_{generate_date_filename()}.jpg'
     cv2.imwrite(output_path, result)
 
-    text, score = checker.check(output_path, ['a photo of a dog', 'a photo of a cat'])
+    text, score = checker.check(output_path, ['a photo of a dog', 'a photo of a cat', 'a book'])
 
-    return f'{text} - {score}'
+    response = f'{text} - {score}'
+    print(response)
+
+    return response
     # io_buf = io.BytesIO(buffer)
 
     # return io_buf.getvalue()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
