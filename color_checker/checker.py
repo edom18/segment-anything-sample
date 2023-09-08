@@ -39,10 +39,12 @@ def extract_colors(image_path, num_colors):
 
     return colors
 
-def check(image_path: str, color_data: ColorData) -> int:
+def check(image_path: str, color_data: ColorData, debug=False) -> int:
     colors = extract_colors(image_path, 6)
-    # plot_colors(colors)
-    # plt.show()
+
+    if debug:
+        plot_colors(colors)
+        plt.show()
 
     converted_colors = [tuple(color) for color in colors]
     result_index = closest_color(converted_colors, color_data.rgbs)
