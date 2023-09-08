@@ -30,11 +30,13 @@ def closest_color(target_rgbs, rgb_list):
 
 def extract_colors(image_path, num_colors):
     image = cv2.imread(image_path)
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    image = image.reshape(-1, 3)
+    h, w = image.shape[:2]
+    resized_image = cv2.resize(image, (int(w / 2), int(h / 2)), interpolation=cv2.INTER_AREA)
+    resized_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB)
+    resized_image = resized_image.reshape(-1, 3)
 
     kmeans = KMeans(n_clusters=num_colors)
-    labels = kmeans.fit_predict(image)
+    labels = kmeans.fit_predict(resized_image)
     colors = kmeans.cluster_centers_
 
     return colors
