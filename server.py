@@ -62,15 +62,19 @@ def upload_file():
 
     text, score = checker.check(filename, missions)
 
-    response = f'{text} - {score}'
-    print(response)
+    result_index = check(filename, color_data, debug=False)
+    result_label = color_data.getlabelAt(result_index)
 
-    result_index = check(filename, color_data)
-    print(color_data.getlabelAt(result_index))
+    response = {
+        "object": {
+            text: float(score),
+        },
+        "color": result_label,
+    }
 
-    return response
+    return json.dumps(response)
+
     # io_buf = io.BytesIO(buffer)
-
     # return io_buf.getvalue()
 
 if __name__ == '__main__':
