@@ -1,0 +1,26 @@
+{
+    "missions": [
+        "bench",
+        "grass",
+        "waterfall"
+    ],
+
+    "colors": [
+        {
+            "label": "red",
+            "elements": [255, 0, 0]
+        },
+        {
+            "label": "green",
+            "elements": [0, 255, 0]
+        },
+        {
+            "label": "blue",
+            "elements": [0, 0, 255]
+        },
+        {
+            "label": "orange",
+            "elements": [253, 126, 0]
+        }
+    ]
+}
