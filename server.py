@@ -5,7 +5,7 @@ import cv2
 import datetime
 import json
 
-from recognizer.segument import SAM
+# from recognizer.segument import SAM
 from recognizer.caption import ImageChecker
 from color_checker.checker import ColorData, check
 from typing import List
