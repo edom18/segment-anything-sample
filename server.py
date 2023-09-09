@@ -111,6 +111,8 @@ def upload_file():
         "color": result_label,
     }
 
+    print(response)
+
     return json.dumps(response)
 
     # io_buf = io.BytesIO(buffer)
