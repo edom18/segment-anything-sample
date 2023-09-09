@@ -8,6 +8,8 @@ import json
 from recognizer.segument import SAM
 from recognizer.caption import ImageChecker
 from color_checker.checker import ColorData, check
+from typing import List
+from typing import Dict
 
 def generate_date_filename():
     # 現在の日時を取得
@@ -20,14 +22,35 @@ app = Flask(__name__)
 # sam = SAM()
 checker = ImageChecker()
 
-config = json.loads(open('configs/label_config.json').read())
+# config = json.loads(open('configs/label_config.json').read())
 
-missions = [mission for mission in config['missions']]
+def validation(data: Dict) -> bool:
+    
+        if 'missions' not in data:
+            return False
+    
+        if 'colors' not in data:
+            return False
 
-color_data = ColorData(
-    labels=[color['label'] for color in config['colors']],
-    rgbs=[color['elements'] for color in config['colors']]
-)
+        for color in data['colors']:
+            if 'label' not in color:
+                return False
+            if 'elements' not in color and len(color['elements']) < 3:
+                return False
+    
+        return True
+
+def parse_payload(data: Dict) -> (List[str], ColorData):
+
+    missions = data.get('missions', [])
+    colors = data.get('colors', [])
+
+    color_data = ColorData(
+        labels=[color.get('label', 'black') for color in colors],
+        rgbs=[color.get('elements', [0, 0, 0]) for color in colors]
+    )
+
+    return missions, color_data
 
 UPLOAD_FOLDER = 'uploads'
 if not os.path.exists(UPLOAD_FOLDER):
@@ -48,11 +71,27 @@ def upload_file():
     if not file:
         return "No file found"
 
+    payload_str = request.form.get('payload')
+    if not payload_str:
+        return "No payload found"
+
+    try:
+        payload = json.loads(payload_str)
+    except:
+        return "Invalid payload. Payload must be json format"
+
+    if not validation(payload):
+        return "Invalid payload. Payload must be following format. { missions: [], colors: [{ label: 'red', elements: [255, 0, 0] }] }}"
+
+    missions, color_data = parse_payload(payload)
+
+    print(missions)
+    print(color_data)
+
     filename = os.path.join(UPLOAD_FOLDER, f"received_image_{generate_date_filename()}.jpg")
     file.save(filename)
 
     # result = sam.crop(filename)
-
     # is_success, buffer = cv2.imencode('.jpg', result)
     # if not is_success:
     #     return "Failed to encode image"
